@@ -23,7 +23,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { icon: Home, label: "Dashboard", href: "#", active: true },
+  { icon: Home, label: "Dashboard", href: "#dashboard", active: true },
   { icon: BookOpen, label: "Courses", href: "#courses" },
   { icon: Calendar, label: "Schedule", href: "#schedule" },
   { icon: BarChart3, label: "Analytics", href: "#activity" },

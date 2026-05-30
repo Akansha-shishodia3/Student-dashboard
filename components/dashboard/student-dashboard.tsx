@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { HeroGreeting } from "@/components/dashboard/hero-greeting";
@@ -20,10 +20,24 @@ interface StudentDashboardProps {
   initialCourses: Course[];
 }
 
+
 export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+
 
   // ── Derived stats from live Supabase data ──────────────────────────────
   const totalCourses = initialCourses.length;
@@ -136,10 +150,12 @@ export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
 
       {/* Main Content */}
       <motion.main
-        animate={{ marginLeft: sidebarCollapsed ? 80 : 260 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="min-h-screen pt-4 pb-8 px-4 lg:px-8 lg:pt-4 mt-16 lg:mt-0"
-      >
+  animate={{
+    marginLeft: isMobile ? 0 : sidebarCollapsed ? 80 : 260,
+  }}
+  transition={{ duration: 0.3, ease: "easeInOut" }}
+  className="min-h-screen pt-4 pb-8 px-4 lg:px-8 lg:pt-4 mt-16 lg:mt-0"
+>
         <div className="lg:transition-[margin] lg:duration-300">
           {/* Top Bar */}
           <div className="hidden lg:flex items-center justify-between mb-8">
@@ -148,7 +164,7 @@ export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
               <input
                 type="text"
                 placeholder="Search courses, lessons, instructors..."
-                className="w-96 h-12 pl-12 pr-4 rounded-xl bg-secondary/50 border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                className="w-full lg:w-96 h-12 pl-12 pr-4 rounded-xl bg-secondary/50 border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
               />
             </div>
             <div className="flex items-center gap-4">
@@ -164,7 +180,7 @@ export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
           </div>
 
           {/* Bento Grid Layout */}
-          <div className="space-y-12">
+          <div className="flex flex-col gap-12">
             {/* Hero Greeting — passes live course count and avg progress */}
             <section id="dashboard">
             <HeroGreeting courseCount={totalCourses} avgProgress={avgProgress} />
@@ -188,7 +204,7 @@ export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
             </section>  
 
             {/* Achievements */}
-            <section id="achievement">
+            <section id="achievement" >
             <AchievementsBadge 
               completedCourses={completedCourses} 
               avgProgress={avgProgress} 
@@ -223,7 +239,7 @@ export function StudentDashboard({ initialCourses }: StudentDashboardProps) {
             {/* Upcoming Tasks — uses real courses */}
             
             <div className="col-span-full lg:col-span-2">
-            <section id="schedule">
+            <section id="schedule" className="py-6">
               <UpcomingTasks courses={initialCourses} />
               </section>
             </div> 
